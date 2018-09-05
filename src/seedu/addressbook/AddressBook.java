@@ -133,6 +133,9 @@ public class AddressBook {
     private static final String COMMAND_EXIT_DESC = "Exits the program.";
     private static final String COMMAND_EXIT_EXAMPLE = COMMAND_EXIT_WORD;
 
+    private static final String COMMAND_SORT_WORD = "sort";
+    private static final String MESSAGE_ADDRESSBOOK_SORTED = "Address book has been sorted!";
+
     private static final String DIVIDER = "===================================================";
 
 
@@ -369,22 +372,24 @@ public class AddressBook {
         final String commandType = commandTypeAndParams[0];
         final String commandArgs = commandTypeAndParams[1];
         switch (commandType) {
-        case COMMAND_ADD_WORD:
-            return executeAddPerson(commandArgs);
-        case COMMAND_FIND_WORD:
-            return executeFindPersons(commandArgs);
-        case COMMAND_LIST_WORD:
-            return executeListAllPersonsInAddressBook();
-        case COMMAND_DELETE_WORD:
-            return executeDeletePerson(commandArgs);
-        case COMMAND_CLEAR_WORD:
-            return executeClearAddressBook();
-        case COMMAND_HELP_WORD:
-            return getUsageInfoForAllCommands();
-        case COMMAND_EXIT_WORD:
-            executeExitProgramRequest();
-        default:
-            return getMessageForInvalidCommandInput(commandType, getUsageInfoForAllCommands());
+            case COMMAND_ADD_WORD:
+                return executeAddPerson(commandArgs);
+            case COMMAND_FIND_WORD:
+                return executeFindPersons(commandArgs);
+            case COMMAND_LIST_WORD:
+                return executeListAllPersonsInAddressBook();
+            case COMMAND_DELETE_WORD:
+                return executeDeletePerson(commandArgs);
+            case COMMAND_CLEAR_WORD:
+                return executeClearAddressBook();
+            case COMMAND_HELP_WORD:
+                return getUsageInfoForAllCommands();
+            case COMMAND_EXIT_WORD:
+                executeExitProgramRequest();
+            case COMMAND_SORT_WORD:
+                return executeSortAllPersonsInAddressBook();
+            default:
+                return getMessageForInvalidCommandInput(commandType, getUsageInfoForAllCommands());
         }
     }
 
@@ -584,6 +589,20 @@ public class AddressBook {
      */
     private static void executeExitProgramRequest() {
         exitProgram();
+    }
+
+    private static String executeSortAllPersonsInAddressBook(){
+        ArrayList<String[]> toBeSorted = getAllPersonsInAddressBook();
+        toBeSorted = sortAddressBook(toBeSorted);
+        updateLatestViewedPersonListing(toBeSorted);
+        return MESSAGE_ADDRESSBOOK_SORTED;
+    }
+
+
+    private static ArrayList<String[]> sortAddressBook (ArrayList<String[]> persons){
+        persons.sort((o1, o2) -> o1[0].toLowerCase().compareTo(o2[0].toLowerCase()));
+        savePersonsToFile(getAllPersonsInAddressBook(), storageFilePath);
+        return persons;
     }
 
     /*
